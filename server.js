@@ -63,3 +63,19 @@ app.get('/products', (req, res, next) => {
         .then(results => res.send(results))
         .catch(err => next(err));
 });
+
+// Route: POST /order
+// Add a new order to the 'order' collection
+app.post('/orders', (req, res, next) => {
+    const newOrder = req.body;
+    db.collection('orders')
+        .insertOne(newOrder)
+        .then(result => res.status(201).json({ success: true, orderId: result.insertedId }))
+        .catch(err => next(err));
+});
+
+// Error handler middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send({ error: 'Internal Server Error' });
+});
