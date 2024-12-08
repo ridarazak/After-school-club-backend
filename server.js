@@ -45,7 +45,15 @@ MongoClient.connect(uri, { connectTimeoutMS: 10000 })
         process.exit(1); // Exit if the connection fails
     });
 
-    
+
+// Logger Middleware
+app.use((req, res, next) => {
+    const now = new Date().toISOString();
+    console.log(`[${now}] ${req.method} ${req.url}`);
+    next();
+});
+
+ 
 // Middleware to ensure database connection
 app.use((req, res, next) => {
     if (!db) {
