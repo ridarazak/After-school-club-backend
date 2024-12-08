@@ -23,12 +23,14 @@ app.use((req, res, next) => {
 
 // MongoDB connection details
 const uri = 'mongodb+srv://ridarazak24:rida1234@cluster1.2zwas.mongodb.net/';
-let db;
+let db, ordersCollection, productsCollection;
 
 // Connect to MongoDB and start the server
 MongoClient.connect(uri, { connectTimeoutMS: 10000 })
     .then(client => {
         db = client.db('webstore');
+        ordersCollection = db.collection('orders'); // Reference the orders collection
+        productsCollection = db.collection('products'); // Reference the products collection
         console.log('Connected to MongoDB successfully');
 
         // Start the server only after DB connection is ready
@@ -41,10 +43,6 @@ MongoClient.connect(uri, { connectTimeoutMS: 10000 })
         process.exit(1); // Exit if the connection fails
     });
 
-// Display a message for root path to show that API is working
-app.get('/', (req, res) => {
-    res.send('Select a collection, e.g., /products');
-});
 
 // Middleware to ensure database connection
 app.use((req, res, next) => {
@@ -64,15 +62,35 @@ app.get('/products', (req, res, next) => {
         .catch(err => next(err));
 });
 
-// Route: POST /order
-// Add a new order to the 'order' collection
-app.post('/orders', (req, res, next) => {
-    const newOrder = req.body;
-    db.collection('orders')
-        .insertOne(newOrder)
-        .then(result => res.status(201).json({ success: true, orderId: result.insertedId }))
-        .catch(err => next(err));
+
+app.post('/orders', async (req, res) => {
+    const { firstName, lastName, phone, cart } = req.body;
+
+    // Validate request body
+    if (!firstName || !lastName || !phone || !cart || !Array.isArray(cart)) {
+        return res.status(400).json({ error: 'Invalid request body' });
+    }
+
+    try {
+        // Prepare the order object
+        const order = {
+            firstName,
+            lastName,
+            phone,
+            items: cart, // Array of product IDs
+            orderDate: new Date()
+        };
+
+        // Insert order into "orders" collection
+        const orderResult = await ordersCollection.insertOne(order);
+
+        res.json({ success: true, orderId: orderResult.insertedId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to process the order' });
+    }
 });
+
 
 // Error handler middleware
 app.use((err, req, res, next) => {
