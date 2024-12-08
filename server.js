@@ -1,6 +1,7 @@
 // Import dependencies modules:
 const express = require('express');
 const { MongoClient } = require('mongodb');
+const { ObjectId } = require('mongodb');
 
 // Create an Express.js instance:
 const app = express();
@@ -43,7 +44,7 @@ MongoClient.connect(uri, { connectTimeoutMS: 10000 })
         process.exit(1); // Exit if the connection fails
     });
 
-
+    
 // Middleware to ensure database connection
 app.use((req, res, next) => {
     if (!db) {
@@ -90,6 +91,40 @@ app.post('/orders', async (req, res) => {
         res.status(500).json({ error: 'Failed to process the order' });
     }
 });
+
+
+// PUT /lessons/:id route
+app.put('/products/:id', async (req, res) => {
+    const productId = req.params.id; // Extract product ID from URL
+    const updates = req.body; // Expect updates as key-value pairs in the request body
+
+    // Validate ID and updates
+    if (!ObjectId.isValid(productId)) {
+        return res.status(400).json({ error: 'Invalid product ID' });
+    }
+
+    if (!updates || Object.keys(updates).length === 0) {
+        return res.status(400).json({ error: 'No update data provided' });
+    }
+
+    try {
+        // Update the document with the new fields
+        const result = await productsCollection.updateOne(
+            { _id: new ObjectId(productId) }, // Match the product by ID
+            { $set: updates } // Use $set to update only specified fields
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        res.json({ success: true, updatedCount: result.modifiedCount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update the product' });
+    }
+});
+
 
 
 // Error handler middleware
