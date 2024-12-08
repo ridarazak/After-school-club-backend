@@ -53,7 +53,18 @@ app.use((req, res, next) => {
     next();
 });
 
- 
+
+// Static File Middleware for serving lesson images
+app.use('/images', express.static(path.join(__dirname, 'public/images'), {
+    fallthrough: true // Allows further handling if a file isn't found
+}));
+
+// Handle 404 errors for missing files
+app.use('/images', (req, res) => {
+    res.status(404).json({ error: 'Image file not found' });
+});
+
+    
 // Middleware to ensure database connection
 app.use((req, res, next) => {
     if (!db) {
