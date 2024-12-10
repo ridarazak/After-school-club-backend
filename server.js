@@ -44,12 +44,12 @@ MongoClient.connect(uri, { connectTimeoutMS: 10000 })  // Connect to MongoDB wit
         process.exit(1);  // Exit if the database connection fails
     });
 
-app.use(express.static(path.join(__dirname, '../AfterSchoolClub-frontend')));
+//app.use(express.static(path.join(__dirname, '../AfterSchoolClub-frontend')));
 
-app.get('/', (req, res) => {
+/*app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../AfterSchoolClub-frontend/afterschool.html')); // Serve a default index.html file
     
-});
+});*/
     
     // Logger Middleware to log HTTP requests with timestamps
 app.use((req, res, next) => {
