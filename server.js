@@ -45,7 +45,7 @@ MongoClient.connect(uri, { connectTimeoutMS: 10000 })  // Connect to MongoDB wit
     });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'afterschool.html')); // Serve a default index.html file
+    res.sendFile(path.join(__dirname, '../AfterSchoolClub-frontend')); // Serve a default index.html file
 });
     
     // Logger Middleware to log HTTP requests with timestamps
