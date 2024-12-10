@@ -44,7 +44,11 @@ MongoClient.connect(uri, { connectTimeoutMS: 10000 })  // Connect to MongoDB wit
         process.exit(1);  // Exit if the database connection fails
     });
 
-// Logger Middleware to log HTTP requests with timestamps
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'afterschool.html')); // Serve a default index.html file
+});
+    
+    // Logger Middleware to log HTTP requests with timestamps
 app.use((req, res, next) => {
     const now = new Date().toISOString();  // Get the current timestamp
     console.log(`[${now}] ${req.method} ${req.url}`);  // Log the method and URL of the request
