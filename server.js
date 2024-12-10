@@ -146,6 +146,36 @@ app.put('/products/:id', async (req, res) => {
 });
 
 
+// Backend - Search Route for Multiple Fields
+app.get('/search', async (req, res) => {
+    const { query } = req.query; // The search query sent by the front-end
+
+    if (!query) {
+        return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    try {
+        // Perform a case-insensitive search on multiple fields
+        const regex = new RegExp(query, 'i'); // 'i' for case-insensitive search
+
+        const searchResults = await productsCollection.find({
+            $or: [
+                { subject: { $regex: regex } },
+                { Location: { $regex: regex } },
+                { price: { $regex: regex } },
+                { rating: { $regex: regex } },
+                { availableInventory: { $regex: regex } }
+            ]
+        }).toArray();
+
+        res.json(searchResults);
+    } catch (err) {
+        console.error('Error searching products:', err);
+        res.status(500).json({ error: 'Failed to perform search' });
+    }
+});
+
+
 
 // Error handler middleware
 app.use((err, req, res, next) => {
