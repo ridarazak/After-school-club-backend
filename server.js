@@ -43,6 +43,7 @@ MongoClient.connect(uri, { connectTimeoutMS: 10000 })  // Connect to MongoDB wit
         console.error('Error connecting to MongoDB:', err.message);
         process.exit(1);  // Exit if the database connection fails
     });
+app.use(express.static(path.join(__dirname, '../AfterSchoolClub-frontend')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../AfterSchoolClub-frontend')); // Serve a default index.html file
