@@ -3,9 +3,11 @@ const express = require('express');  // Express framework for building the web s
 const { MongoClient } = require('mongodb');  // MongoDB client for connecting to the database
 const { ObjectId } = require('mongodb');  // ObjectId to handle MongoDB document IDs
 const path = require('path');  // Path module to handle file paths
+const cors = require('cors');
 
 // Create an Express.js application instance
 const app = express();
+app.use(cors());
 
 // Configuring Express to handle JSON requests
 app.use(express.json());
